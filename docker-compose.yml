@@ -1,0 +1,19 @@
+services:
+  hindsight:
+    image: ghcr.io/vectorize-io/hindsight:latest
+    container_name: tripmate-hindsight
+    restart: unless-stopped
+    ports:
+      - "8888:8888" # API
+      - "9999:9999" # UI
+    environment:
+      # xAI is OpenAI-compatible, so use the openai provider with xAI's base URL
+      HINDSIGHT_API_LLM_PROVIDER: openai
+      HINDSIGHT_API_LLM_BASE_URL: https://api.x.ai/v1
+      HINDSIGHT_API_LLM_API_KEY: ${XAI_API_KEY}
+      HINDSIGHT_API_LLM_MODEL: ${HINDSIGHT_LLM_MODEL:-grok-4.5}
+    volumes:
+      - hindsight-data:/home/hindsight/.pg0
+
+volumes:
+  hindsight-data:
