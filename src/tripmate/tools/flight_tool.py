@@ -232,7 +232,10 @@ def resolve_location_to_iata(location: str):
         return CITY_MAIN_AIRPORT[location_clean]
 
     # Country preferred airport
-    country_code = country_name_to_code(location_clean)
+    try:
+        country_code = country_name_to_code(location_clean)
+    except ValueError:
+        country_code = None  # not a country: fall through to the city search below
     if country_code:
         airport = get_best_airport_for_country(country_code)
         if airport:

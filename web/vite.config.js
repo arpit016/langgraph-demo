@@ -6,6 +6,8 @@ export default defineConfig({
   server: {
     port: 5173,
     // Forward API calls to the FastAPI backend so the browser sees one origin
-    proxy: { "/agent": "http://localhost:8000" },
+    proxy: Object.fromEntries(
+      ["/agent", "/employees", "/conversations", "/health"].map((p) => [p, "http://localhost:8000"])
+    ),
   },
 });

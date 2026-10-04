@@ -55,6 +55,8 @@ class TravelState(TypedDict):
     hotel_results: str
     itinerary: str
     llm_calls: int
+    # id only, never the artifact body (that lives in agents.artifact_versions)
+    active_artifact_id: str
 
 
 # =========================

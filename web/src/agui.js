@@ -1,10 +1,10 @@
 // Minimal AG-UI client: POST a message, read the Server-Sent Events stream,
 // and call onEvent(event) for every event the backend emits.
-export async function runAgent({ message, threadId, onEvent, signal }) {
+export async function runAgent({ message, conversationId, employeeId, onEvent, signal }) {
   const res = await fetch("/agent", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message, thread_id: threadId }),
+    headers: { "Content-Type": "application/json", "X-Employee-Id": String(employeeId) },
+    body: JSON.stringify({ message, conversation_id: conversationId }),
     signal,
   });
   if (!res.ok || !res.body) throw new Error(`Request failed (${res.status})`);
@@ -30,4 +30,18 @@ export async function runAgent({ message, threadId, onEvent, signal }) {
       if (data) onEvent(JSON.parse(data));
     }
   }
+}
+
+// Plain JSON calls (history, build, feedback, ...) always carry the employee header
+export async function api(path, employeeId, options = {}) {
+  const res = await fetch(path, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      "X-Employee-Id": String(employeeId),
+      ...(options.headers || {}),
+    },
+  });
+  if (!res.ok) throw new Error(`${options.method || "GET"} ${path} failed (${res.status})`);
+  return res.json();
 }
